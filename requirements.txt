@@ -10,9 +10,11 @@ argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
 arrow==1.3.0
 asciitree==0.3.3
+asf_search==14.1.0
 astroid==3.3.9
 asttokens==3.0.0
 astunparse==1.6.3
+async-generator==1.10
 async-lru==2.0.5
 attrs==25.1.0
 autopep8==2.0.4
@@ -36,8 +38,11 @@ contextily==1.6.2
 contourpy==1.3.1
 crc32c==2.7.1
 cryptography==44.0.2
+cubo==2026.2.0
 cycler==0.12.1
 dask==2025.2.0
+dateparser==1.5.0
+DateTime==6.0
 debugpy==1.8.14
 decorator==5.2.1
 defusedxml==0.7.1
@@ -69,6 +74,7 @@ geopy==2.4.1
 geoutils==0.1.17
 gitdb==4.0.12
 GitPython==3.1.44
+google-crc32c==1.8.0
 google-pasta==0.2.0
 greenlet==3.2.1
 grpcio==1.76.0
@@ -79,6 +85,7 @@ hf-xet==1.1.5
 httpcore==1.0.8
 httpx==0.28.1
 huggingface-hub==0.33.2
+hyp3_sdk==7.7.8
 idna==3.10
 igraph==0.11.9
 imageio==2.37.0
@@ -101,6 +108,7 @@ jupyter-events==0.12.0
 jupyter-lsp==2.2.5
 jupyter-rsession-proxy==2.3.0
 jupyter-server-mathjax==0.2.6
+jupyter-telemetry==0.1.0
 jupyter_client==8.6.3
 jupyter_core==5.8.1
 jupyter_server==2.15.0
@@ -114,6 +122,7 @@ jupyterlab_pygments==0.3.0
 jupyterlab_server==2.27.3
 keras==3.11.3
 kiwisolver==1.4.8
+lazy-loader==0.6
 lhsmdu==1.1
 libclang==18.1.1
 libpysal==4.13.0
@@ -149,6 +158,20 @@ notebook_shim==0.2.4
 numba==0.61.2
 numcodecs==0.15.1
 numpy==2.2.6
+nvidia-cublas-cu12==12.6.4.1
+nvidia-cuda-cupti-cu12==12.6.80
+nvidia-cuda-nvrtc-cu12==12.6.77
+nvidia-cuda-runtime-cu12==12.6.77
+nvidia-cudnn-cu12==9.5.1.17
+nvidia-cufft-cu12==11.3.0.4
+nvidia-cufile-cu12==1.11.1.6
+nvidia-curand-cu12==10.3.7.77
+nvidia-cusolver-cu12==11.7.1.2
+nvidia-cusparse-cu12==12.5.4.2
+nvidia-cusparselt-cu12==0.6.3
+nvidia-nccl-cu12==2.26.2
+nvidia-nvjitlink-cu12==12.6.85
+nvidia-nvtx-cu12==12.6.77
 nvtx==0.2.12
 oauthlib==3.2.2
 odc==0.1.2
@@ -198,6 +221,7 @@ pylint==3.3.6
 pymannkendall==1.4.3
 pyodc==1.6.0
 pyogrio==0.10.0
+pyOpenSSL==24.1.0
 pyparsing==3.2.1
 pyproj==3.7.1
 pystac==1.12.2
@@ -218,6 +242,7 @@ rasterio==1.4.3
 rasterstats==0.20.0
 rchitect==0.4.7
 referencing==0.36.2
+regex==2026.11.9
 requests==2.32.3
 rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
@@ -225,14 +250,16 @@ rich==14.2.0
 rioxarray==0.18.2
 rope==1.13.0
 rpds-py==0.23.1
+ruamel.yaml==0.18.6
+ruamel.yaml.clib==0.2.8
 safetensors==0.5.3
+scikit-image==0.26.0
 scikit-learn==1.6.1
 scipy==1.15.2
 seaborn==0.13.2
 segmentation_models_pytorch==0.5.0
 sen2nbar==2024.6.0
 Send2Trash==1.8.3
-setuptools==78.1.0
 shap==0.48.0
 shapely==2.1.2
 simpervisor==1.0.0
@@ -251,6 +278,7 @@ stack-data==0.6.3
 stackstac==0.5.1
 statsmodels==0.14.4
 sympy==1.13.3
+tenacity==9.2.1
 tensorboard==2.20.0
 tensorboard-data-server==0.7.2
 tensorflow==2.20.0
@@ -259,10 +287,14 @@ terminado==0.18.1
 texttable==1.7.0
 threadpoolctl==3.5.0
 thriftpy2==0.5.3
+tifffile==2026.3.3
 timm==1.0.16
 tinycss2==1.4.0
+tomli==2.0.1
 tomlkit==0.13.2
 toolz==1.0.0
+torch==2.7.1
+torchvision==0.22.1
 tornado==6.5.1
 tqdm==4.67.1
 traitlets==5.14.3
@@ -271,6 +303,7 @@ types-python-dateutil==2.9.0.20241206
 typing-inspection==0.4.0
 typing_extensions==4.12.2
 tzdata==2025.1
+tzlocal==5.4.5
 ujson==5.10.0
 uri-template==1.3.0
 urllib3==2.3.0
@@ -280,7 +313,6 @@ webencodings==0.5.1
 websocket-client==1.8.0
 Werkzeug==3.1.3
 whatthepatch==1.0.7
-wheel==0.45.1
 wrapt==1.17.2
 xarray==2025.4.0
 xdem==0.1.6
@@ -291,3 +323,4 @@ yapf==0.43.0
 yarl==1.19.0
 zarr==2.16.1
 zipp==3.21.0
+zope.interface==8.6
