@@ -15,3 +15,7 @@ erosivity_index/stations_data/station_EI30
 erosivity_index/stations_data/station_EIdaily
 erosivity_index/stations_data/station_EIdaily_percent
 erosivity_index/stations_data/metadata
+tillage/coherence
+cfactor/data
+cfactor/run_eb1
+cfactor/test

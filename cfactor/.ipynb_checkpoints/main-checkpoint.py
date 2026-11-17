@@ -4,6 +4,8 @@ C-factor calibration pipeline — main entry point.
 Usage:
     taskset -c 15-20 python main.py                   # full pipeline
     taskset -c 15-20 python main.py --skip-sampling   # calibration only
+
+cd mnt/eo-nas1/eoa-share/projects/028_Erosion/Modelling_EB/git/erosion_indicator/cfactor
 """
 import argparse
 import os
@@ -14,24 +16,24 @@ from calibrate_cfactor import run_calibration
 
 CONFIG = {
     # ---- Sampling / gapfilling (sample_FC.py) ----
-    'lnf_labels_path':     '~/mnt/eo-nas1/data/landuse/documentation/LNF_code_classification_20260217.xlsx', 
-    'lnf_dir':             '~/mnt/eo-nas1/data/landuse/raw', 
+    'lnf_labels_path':     '/mnt/eo-nas1/data/landuse/documentation/LNF_code_classification_20260217.xlsx', 
+    'lnf_dir':             '/mnt/eo-nas1/data/landuse/raw', 
     'top_crops':            None,
     'lnf_ignore_codes':    [553, 554, 555, 556, 559, 572, 594, 595, 598, 618, 625], # arable or grassland classes to ignore
     'grassland_codes':     [601],  # LNF codes for grassland to include in sampling (e.g. [601, 611]) -> 601 is actually labeled as arable
     'tot_samples':         10000,
-    'samples_path':        'samplesv2.pkl',
-    'samples_s2_path':     'samples_datav2.pkl', # not generated if FC precomputed
+    'samples_path':        'samples_aui.pkl',
+    'samples_s2_path':     'samples_data_aui.pkl', # not generated if FC precomputed
     'fc_precompute':        False,  # whether to use precomputed FC. PROBLEM: need to attach cloud cleaning bands from S2 data
-    'fc_dir':              '~/mnt/eo-nas1/data/satellite/sentinel2/FC',
-    's2_grid_path':        '~/mnt/eo-nas1/eoa-share/projects/012_EO_dataInfrastructure/Project layers/gridface_s2tiles_CH.shp',
-    's2_dir':              '~/mnt/eo-nas1/data/satellite/sentinel2/raw/CH',
-    'soil_dir':            '~/mnt/eo-nas1/data/satellite/sentinel2/DLR_soilsuite_preds/',
-    'fc_preds_path':       'samples_data_predv2.pkl',
+    'fc_dir':              '/mnt/eo-nas1/data/satellite/sentinel2/FC',
+    's2_grid_path':        '/mnt/eo-nas1/eoa-share/projects/012_EO_dataInfrastructure/Project layers/gridface_s2tiles_CH.shp',
+    's2_dir':              '/mnt/eo-nas1/data/satellite/sentinel2/raw/CH',
+    'soil_dir':            '/mnt/eo-nas1/data/satellite/sentinel2/DLR_soilsuite_preds/',
+    'fc_preds_path':       'samples_data_pred_aui.pkl',
     'cirrus_thresh':        500,  # Max value of blue band when SCL=10 (cirrus cloud masking)
     'max_missing_frac':     0.05,  # Max amount of missing data per date in a field timeseries
     'drop_fraction_threshold': 0.7,  # drop fields where >drop_fraction_threshold [0-1] of observations are masked
-    'gapfilled_fc_path':    'samples_data_gprv2.parquet',
+    'gapfilled_fc_path':    'samples_data_gpr_aui.parquet',
     'max_gap_days':         15,
     # Gapfilling method:
     #   'irregular' -> keep cleaned obs, GP-fill only gaps > max_gap_days
@@ -39,8 +41,9 @@ CONFIG = {
     #                  cadence anchored at July 1 of yr-1 (agricultural year)
     'gapfill_method':      'regular',
     'grid_step_days':      10,
-    'n_jobs':              2,
-    'years': [2019, 2020, 2021, 2022, 2023, 2024], # LNF years to use for sampling AGIS fields
+    'n_jobs':              8,
+    'aui_fields':          True,
+    'years': [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], # LNF years to use for sampling AGIS fields
     # Years used to pick the "top arable crops by area" from the LNF spreadsheet.
     # The spreadsheet's per-year area columns are only well-defined for 2021+
     # ('2021_Area_m22', '2022_Area_m23', ...); 2019/2020 use the generic
@@ -56,9 +59,9 @@ CONFIG = {
     # `lnf_mapping_csv` (kulturcode <-> Kultur_nutzung) is used both by the AGIS
     # shortlist AND by the C-factor crop grouping below, so it is read for both
     # sampling strategies.
-    'lnf_mapping_csv':   '~/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Core_Snapshot/Agrarbericht_2025/tbl_kulturmapping.csv',
+    'lnf_mapping_csv':   '/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Core_Snapshot/Agrarbericht_2025/tbl_kulturmapping.csv',
     # Used only when sampling_strategy == 'agis':
-    'nutzung_csv':       '~/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Core_Snapshot/Agrarbericht_2025/tbl_nutzungsdaten.csv',
+    'nutzung_csv':       '/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Core_Snapshot/Agrarbericht_2025/tbl_nutzungsdaten.csv',
     'agis_rules':              ('single_crop_farm', 'grassland_plus_one', 'dominant_crop'),
     'agis_grass_min_share':    0.50,
     'agis_arable_min_share':   0.02,
@@ -74,7 +77,7 @@ CONFIG = {
     # Same crop grouping (analogy_to_main folding) as the AGIS sampler is applied.
     # Canonical source: CSV with a real `betr_ID` matching AGIS. (The *_Kultur.xlsx
     # export uses BBS_ID/KT_ID_P, which do NOT match AGIS betr_ID.)
-    'verfahren_path':          '~/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Erosionsrisiko/schonende_bodenbearbeitung.csv',
+    'verfahren_path':          '/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Erosionsrisiko/schonende_bodenbearbeitung.csv',
     # Budget for the VERFAHREN draw (separate from the AGIS `tot_samples`).
     'verfahren_tot_samples':   5000,
     # Years present in the conservation-tillage file (subset of `years`).
@@ -97,11 +100,11 @@ CONFIG = {
     'c_factor_provenance_path': 'c_factor_provenance.xlsx',
 
     # ---- Calibration (calibrate_cfactor.py) ----
-    'ei_path':                  '../erosivity_index/predictions/grid_EI_daily_avg_pred_20260424_nn3.parquet',
-    'c_factor_table_path':      '~/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Erosionsrisiko/C_Faktoren.csv',
-    'lnf_classification_path':  '~/mnt/eo-nas1/data/landuse/documentation/LNF_code_classification_20260217.xlsx',
+    'ei_path':                  '../../../../Erosion/erosivity_index/predictions/grid_EI_daily_avg_pred_20260424_nn3.parquet',
+    'c_factor_table_path':      '/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Erosionsrisiko/C_Faktoren.csv',
+    'lnf_classification_path':  '/mnt/eo-nas1/data/landuse/documentation/LNF_code_classification_20260217.xlsx',
     'manual_overrides_path':    None, # only need it if any of sampled crops fail to auto-match LNF codes
-    'results_folder':           'calibration_analysis_twobeta_noley',
+    'results_folder':           'run_eb1',
     'calibration_results_path': 'calibration_results.csv',
     'ts_cols':                  ['lnf_code', 'yr', 'poly_id'],
     'crop_col':                 'lnf_code',
@@ -120,7 +123,7 @@ CONFIG = {
     # `beta_bounds` if None). Set explicit tuples to constrain PV/NPV separately.
     'beta_bounds_pv':           None,
     'beta_bounds_npv':          None,
-    'exclude_calibration_lnf_codes': [601, 602], #[601, 611, 545, 546],  # Kunstwiesen, Extensiv genutzte Wiesen
+    'exclude_calibration_lnf_codes': [], #[601, 602, 611, 545, 546],  # Kunstwiesen, Extensiv genutzte Wiesen
     # FC is on a 0–100 scale here (PV+NPV scaled by 100). Matthews et al. (2023) found β ≈ 0.04 with FC on 0–100
     'area_weight_loss':         True, # If True, weight the loss by Swiss arable area per crop (areas from the LNF spreadsheet)
     # Years to average for the area weights — should match (or be a subset of)
@@ -150,7 +153,7 @@ CONFIG = {
     #   'first_row'  — first row's reb_sb (matches the R-side `slice(1)`
     #                  in 05-Dataprep.R; deterministic but arbitrary)
     #   'mode'       — most frequent reb_sb in the farm-year
-    'ressourceneffizienz_csv':   '~/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Core_Snapshot/Agrarbericht_2025/tbl_ressourceneffizienzbeitrag.csv',
+    'ressourceneffizienz_csv':   '/mnt/Data-Labo-RE/27_Natural_Resources-RE/321.4_WAUM_protected/Daten/Core_Snapshot/Agrarbericht_2025/tbl_ressourceneffizienzbeitrag.csv',
     'tillage_assignment':        'stochastic',
     'tillage_random_seed':       42,
 }
@@ -185,4 +188,7 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    run_calibration(CONFIG)
+    
+

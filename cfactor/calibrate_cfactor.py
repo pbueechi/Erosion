@@ -1446,7 +1446,10 @@ def run_calibration_stratified(config: dict) -> None:
     x_snap, y_snap = snap_to_ei_grid(df_fc['x'].values, df_fc['y'].values, x_off, y_off)
     df_ei = load_ei_for_pixels(ei_path, np.unique(x_snap), np.unique(y_snap))
     df = join_ei_to_fc(df_fc, df_ei, x_off, y_off)
- 
+
+    df.to_csv(os.path.join(results_dir, 'df.csv'), index=False)
+    df_ref.to_csv(os.path.join(results_dir, 'df_ref.csv'), index=False)
+    
     # Calibrate
     print(f"[stratified] Calibrating β (stratum-level MAE objective, "
           f"mode='{calibration_mode}')...")
@@ -1577,6 +1580,10 @@ def run_calibration(config: dict) -> None:
     print("Joining EI to FC timeseries...")
     df = join_ei_to_fc(df_fc, df_ei, x_off, y_off)
     print(df)
+
+    df.to_csv(os.path.join(results_dir, 'df.csv'), index=False)
+    df_ref.to_csv(os.path.join(results_dir, 'df_ref.csv'), index=False)
+    
     # Calibrate beta (Matthews et al. strategy: crop-level mean absolute error)
     print(f"Calibrating β (crop-level MAE objective, mode='{calibration_mode}')...")
     beta_opt, df_crop = calibrate_beta(df, df_ref, ts_cols,
@@ -1618,3 +1625,4 @@ def run_calibration(config: dict) -> None:
  
  
     print("Done.")
+
